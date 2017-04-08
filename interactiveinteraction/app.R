@@ -1,40 +1,19 @@
+
 library(shiny)
+library(effects)
 
-
-# create data and run model
-set.seed(123)
-N <- 1000
-pred1 <- runif(N)
-pred2 <- runif(N)
-#create linear predictor (basically the model wrt the effects of the predictors on the response): 
-# lp=as.vector(scale(pred1))+as.vector(scale(pred1))*(0.75+as.vector(scale(pred2))) 
-lp <- scale(pred1) + scale(pred1) * (0.75 + scale(pred2))
-
-resp <- rbinom(N, size=1, prob=exp(lp)/(1+exp(lp)))#create response
-
-#put all variables involved (including the two predictors z-transformed) into a data frame:
-xdata <- data.frame(pred1, pred2, resp, zpred1=scale(pred1), zpred2=scale(pred2))
-rm(N, pred1, pred2, resp, lp)#... and remove them from the workspace 
-res <- glm(resp ~ zpred1*zpred2, family=binomial, data=xdata) 
-
-
-
-
+# Define UI for application that draws a histogram
 ui <- fluidPage(
    
    # Application title
-   titlePanel("GLMM with two-way interaction"),
+   titlePanel("colorful interaction"),
    
    # Sidebar with a slider input for number of bins 
    sidebarLayout(
       sidebarPanel(
-        sliderInput("bins", "number of bins:",min = 3, max = 33, value = 11),
         sliderInput("theta", "angle theta:",min = -180, max = 180,value = -20, step = 10),
-        checkboxInput("redline", label = "red line", value = FALSE),
-        sliderInput("x", "pred1:", min = round(min(xdata$zpred1),1), max = round(max(xdata$zpred1),1), value = 0, step = 0.1),
-        checkboxInput("blueline", label = "blue line", value = FALSE),
-        sliderInput("y", "pred2:", min = round(min(xdata$zpred2),1), max = round(max(xdata$zpred2),1), value = 0, step = 0.1)
-        
+        sliderInput("xval","fixed x (pred1):",min = 1, max = 11,value = 1),
+        sliderInput("yval","fixed y (pred2):",min = 1, max = 11,value = 1)
       ),
       
       # Show a plot of the generated distribution
@@ -44,42 +23,59 @@ ui <- fluidPage(
    )
 )
 
-# Define server logic 
+# Define server logic required to draw a histogram
 server <- function(input, output) {
    
    output$distPlot <- renderPlot({
-
      
-     xp1 <- seq(from=min(xdata$zpred1), to=max(xdata$zpred1), length.out=input$bins)
-     yp2 <- seq(from=min(xdata$zpred2), to=max(xdata$zpred2), length.out=input$bins)
+     set.seed(123)
+     N <- 500
+     pred1 <- rnorm(N)
+     pred2 <- rnorm(N)
+     resp <- pred1 * pred2 + rnorm(N, sd = 3) 
      
-     coeffs=coefficients(res)#store model coefficients in a vector with a short name
+     GRIDRES <- 11
+     THETA <- input$theta
+     YCUT <- input$yval
+     XCUT <- input$xval
      
-     pred.mat=outer(X=xp1, Y=yp2, FUN=function(x, y){
-       coeffs["(Intercept)"]+coeffs["zpred1"]*x+coeffs["zpred2"]*y+coeffs["zpred1:zpred2"]*x*y })
-     pred.mat=exp(pred.mat)/(1+exp(pred.mat)) 
-     
-     tmat=persp(x=xp1, y=yp2, z=pred.mat, theta=input$theta, phi=10, expand=0.6, r=10, xlab="predictor1",
-                ylab="predictor2", zlab="response", zlim=c(0, 1))
-     
-
+     xdata <- data.frame(resp, pred1=scale(pred1), pred2 = scale(pred2)); rm(pred1, pred2, resp, N); summary(res <- lm(resp ~ pred1*pred2, xdata))
+     newx <- seq(min(xdata$pred1), max(xdata$pred1), length.out = GRIDRES); newy <- seq(min(xdata$pred2), max(xdata$pred2), length.out = GRIDRES)
+     pdata <- effect("pred1:pred2", res, xlevels=list(pred1=newx, pred2 = newy))
      
      
-     if(input$redline) {
-       pred.mat=outer(X=input$x, Y=yp2, FUN=function(x, y){
-         coeffs["(Intercept)"]+coeffs["zpred1"]*x+coeffs["zpred2"]*y+coeffs["zpred1:zpred2"]*x*y })
-       pred.mat=exp(pred.mat)/(1+exp(pred.mat))
-       points(trans3d(x=input$x, y=yp2, z=t(pred.mat), pmat=tmat), type="l", col="red", lwd=2)
-       
-     }
+     layout(matrix(c(1,2,1,3), ncol=2), heights = c(5,3))
      
-     if(input$blueline) {
-       pred.mat=outer(X=xp1, Y=input$y, FUN=function(x, y){
-         coeffs["(Intercept)"]+coeffs["zpred1"]*x+coeffs["zpred2"]*y+coeffs["zpred1:zpred2"]*x*y })
-       pred.mat=exp(pred.mat)/(1+exp(pred.mat))
-       points(trans3d(x=xp1, y=input$y, z=pred.mat, pmat=tmat), type="l", col="blue", lwd=2)
-       
-     }
+     
+     perspmat <- persp(x = newx, y = newy, z = matrix(pdata[[5]], ncol=length(newx)), theta=THETA, phi=10, expand=0.6, r=10, xlab="predictor1", ylab="predictor2", zlab="response", zlim=c(-11, 11), ticktype = "detailed")
+     
+     xcols <- rainbow(100)[cut(xdata$resp, breaks = 100)]
+     
+     points(trans3d(xdata$pred1, xdata$pred2, xdata$resp, perspmat), pch=16, col=xcols)
+     
+     
+     
+     # fix pred2 and show relation between pred1 and resp
+     xcuts <- cut(xdata$pred2, breaks = GRIDRES-1)
+     xmid <- (as.numeric( sub("\\((.+),.*", "\\1", levels(xcuts)) ) + as.numeric( sub("[^,]*,([^]]*)\\]", "\\1", levels(xcuts)) )) * 0.5
+     xpos <- which(as.numeric(xcuts) == YCUT)
+     plot(xdata$pred1[xpos], xdata$resp[xpos], pch=16, col=xcols[xpos], xlab="pred1", ylab="response", xlim=range(xdata$pred1), ylim=c(-11,11), main=paste("pred2= ", round(xmid[YCUT],2)))
+     
+     pd <- data.frame(effect("pred1:pred2", res, xlevels=list(pred2 = xmid, pred1 = newx )))
+     pd <-pd[round(pd$pred2 - xmid[YCUT], 4)== 0.0000, ]
+     points(pd$pred1, pd$fit, type="l")
+     
+     
+     # fix pred1 and show relation between pred2 and resp
+     xcuts <- cut(xdata$pred1, breaks = GRIDRES-1)
+     xmid <- (as.numeric( sub("\\((.+),.*", "\\1", levels(xcuts)) ) + as.numeric( sub("[^,]*,([^]]*)\\]", "\\1", levels(xcuts)) )) * 0.5
+     xpos <- which(as.numeric(cut(xdata$pred1, breaks = GRIDRES-1)) == XCUT)
+     plot(xdata$pred2[xpos], xdata$resp[xpos], pch=16, col=xcols[xpos], xlab="pred2", ylab="response", xlim=range(xdata$pred2), ylim=c(-11,11), main=paste("pred1= ", round(xmid[XCUT],2)))
+     
+     
+     pd <- data.frame(effect("pred1:pred2", res, xlevels=list(pred2 = newy, pred1 = xmid )))
+     pd <-pd[round(pd$pred1 - xmid[XCUT], 4)== 0.0000, ]
+     points(pd$pred2, pd$fit, type="l")
    })
 }
 
