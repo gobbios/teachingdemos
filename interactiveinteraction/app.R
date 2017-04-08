@@ -62,27 +62,7 @@ server <- function(input, output) {
      tmat=persp(x=xp1, y=yp2, z=pred.mat, theta=input$theta, phi=10, expand=0.6, r=10, xlab="predictor1",
                 ylab="predictor2", zlab="response", zlim=c(0, 1))
      
-      
-     #bin predictor 1:
-     bin.width=diff(xp1)[1]#determine bin width for the predictor 
-     binned.pv1=cut(x=xdata$zpred1, breaks=xp1, labels=F, include.lowest=T) 
-     binned.pv1=min(xp1)+bin.width/2+(binned.pv1-1)*bin.width
-     #bin predictor 2:
-     bin.width=diff(yp2)[1]#determine bin width for the predictor 
-     binned.pv2=cut(x=xdata$zpred2, breaks=yp2, labels=F, include.lowest=T) 
-     binned.pv2=min(yp2)+bin.width/2+(binned.pv2-1)*bin.width
-     
-     #average the response separately per combinaton of the values of binned.pv1 and binned.pv2:
-     observed=aggregate(x=xdata$resp, by=list(pv1=binned.pv1, pv2=binned.pv2), FUN=mean) #determine sample size per combination of values of the two predictors (not counting NAs): 
-     N=aggregate(x=!is.na(xdata$resp), by=list(pv1=binned.pv1, pv2=binned.pv2), FUN=sum)
-     
-     expected=coeffs["(Intercept)"]+coeffs["zpred1"]*observed$pv1+coeffs["zpred2"]*observed$pv2+coeffs["zpred1:zpred2"]*observed$pv1*observed$pv2
-     expected=exp(expected)/(1+exp(expected))#transform from link to probability space
-     
-     points(trans3d(x=observed$pv1, y=observed$pv2, z=observed$x, pmat=tmat),
-            pch=c(1, 19)[1+as.numeric(observed$x>expected)], cex=0.5*N$x^(1/3)) 
-     
-     #points(trans3d(x=observed$pv1, y=observed$pv2, z=observed$x, pmat=tmat))
+
      
      
      if(input$redline) {
