@@ -23,7 +23,7 @@ ui <- fluidPage(
 
 server <- function(input, output) {
   userid <- paste0(sample(c(letters, LETTERS), 8), collapse = "")
-  today <- as.character(Sys.Date())
+  today <- as.character(Sys.time())
   vals <- reactiveValues(coords = data.frame(fig = 1:4, x1 = 0, x2 = 0, y1 = 0, y2 = 0))
   
   # create figures
