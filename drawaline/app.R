@@ -76,18 +76,23 @@ server <- function(input, output) {
   })
    
   observeEvent(input$submitresults, {
-   m <- mongo(collection = "plottingcoordinates",
-               url = sprintf(
-                 "mongodb://%s:%s@%s/%s",
-                 "gobbios",
-                 input$thepassword,
-                 "ds147534.mlab.com:47534",
-                 "teachingdemo"))
+    m <- tryCatch(mongo(collection = "plottingcoordinates",
+                        url = sprintf("mongodb://%s:%s@%s/%s", "gobbios", input$thepassword, "ds147534.mlab.com:47534", "teachingdemo")), 
+                  error = function(e) FALSE)
 
-   res <- as.data.frame(vals$coords)
-   res$user <- userid
-   res$today <- today
-   m$insert(res)
+  if(class(m)[1] == "mongo") {
+    res <- as.data.frame(vals$coords)
+    res$user <- userid
+    res$today <- today
+    m$insert(res)
+
+    showModal(modalDialog(title = "Success", "Thank you."))
+    # Sys.sleep(5)
+    # stopApp()
+  } else {
+    showModal(modalDialog(title = "Error", "Hmmm. Something went wrong. Did you enter the correct password?"))
+  } 
+
   })
    
 }
