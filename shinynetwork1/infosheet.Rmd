@@ -1,0 +1,14 @@
+
+&nbsp;
+
+Some notes on this app. The major purpose of it is to demonstrate some of the possibilities that `shiny` presents in the context of visualizing social networks. The data were generated such that there are three clusters of individuals with only two individuals that were part of all three clusters. And the data were also generated in a directed way. This is important because this version of the app ignores this latter aspect for the centrality measures for which directionality is relevant. A 'proper' version of this app would allow specifying directionality, e.g. in- versus out-degree.
+
+One annoying thing that I couldn't fix yet is the colour of the labels in the network figure, which I set to show up in white, but which doesn't work, at least on the computer I'm writing this.
+
+One other thing that would need some work is to 'fix' the layout of the network figure. So far this works only in a very limited way. For example, if the clustering is drawn or if the centrality measure selected changes, the layout of the network figure is maintained. But as soon as the composition of individuals changes, the layout is recalculated. 
+
+Finally, the regression example is based on a simulated effect of eigenvector centrality on parasite load. This is entirely arbitrary and is only supposed to illustrate the effect of knocking out individuals from the network. Also note that for the purpose of modelling, the centrality indices were *z*-transformed.
+
+Oh, and all the network metrics and plots were done using the `igraph` package.
+
+And more generally, I fixed a lot of the settings for the calculations of the clustering and centrality measures, so the whole app is really more of a proof-of-concept than anything else. Really cool next steps would be to integrate the data generation in the app, so that the user can decide for global parameters (group size, modularity etc.) and/or allow to import a data set.
