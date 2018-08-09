@@ -1,6 +1,8 @@
 # requires igraph in addition to shiny
 library(shiny)
 library(igraph)
+library(fontawesome)
+
 # the data matrix
 mat <- structure(c(0, 0.007, 0.266, 0.129, 2.196, 0.634, 0.011, 0, 0,
                    0, 0, 0, 0, 0, 0.151, 0, 0.532, 0.044, 0.17, 0.145, 0.104, 0,
@@ -41,6 +43,7 @@ ui <- fluidPage(
                   choices = list("none" = "none", "fast_greedy" = "fast_greedy", "leading_eigen" = "leading_eigen"), selected = "none"),
       selectInput("centrmeas", label = "centrality measure",
                   choices = list("none" = 1, "eigenvector" = 2, "betweenness" = 3, "closeness" = 4, "degree" = 5), selected = 1),
+      actionButton(inputId = "refreshlayout", label = "refresh layout", icon = icon("refresh")),
       checkboxGroupInput(inputId = "testids", label = "IDs", choices = idlist, selected = ids)
     ),
 
@@ -63,7 +66,19 @@ server <- function(input, output) {
   set.seed(123)
   xdata <- data.frame(parasiteload = e * 3 + rnorm(length(e)) + 3, id = names(e))
 
-  # create the actual graph
+  # fix the layout (and allow refreshing it via reactive expression)
+  # start with a default layout (and 'fix it' by set.seed())
+  set.seed(123)
+  templout <- layout_nicely(graph = g)
+  rownames(templout) <- ids
+  lout <- reactiveValues(lout = templout)
+  # recalculate the layout if the button is pressed
+  observeEvent(input$refreshlayout, {
+    lout$lout <- layout_nicely(graph = g)
+    rownames(lout$lout) <- ids
+  })
+
+  # create the actual graph and other relevant features for the final figure output
   makegraph <- reactive({
     g <- graph_from_adjacency_matrix(adjmatrix = mat[input$testids, input$testids],
                                      weighted = TRUE,
@@ -134,15 +149,17 @@ server <- function(input, output) {
     # two options: with or without legend
     if(input$centrmeas == 1) { # no legend...
       par(mar = c(0, 0, 0, 0))
-      set.seed(123)
-      plot(G, vertex.color = V(G)$xcol, mark.groups = grplabels, edge.width = E(G)$weight * input$weightwidth, label.color = "white")
+      plot(G, vertex.color = V(G)$xcol, mark.groups = grplabels,
+           edge.width = E(G)$weight * input$weightwidth, label.color = "white",
+           layout = lout$lout[input$testids, ]) #
     }
     if(input$centrmeas > 1) {
       # create layout for a second plot that will contain the legend for the colour gradient
       layout(matrix(1:2, nrow = 1), widths = c(5, 2))
       par(mar = c(0, 0, 0, 0))
-      set.seed(123)
-      plot(G, vertex.color = V(G)$xcol, mark.groups = grplabels, edge.width = E(G)$weight * input$weightwidth, label.color = "white")
+      plot(G, vertex.color = V(G)$xcol, mark.groups = grplabels,
+           edge.width = E(G)$weight * input$weightwidth, label.color = "white",
+           layout = lout$lout[input$testids, ])
       par(mar = c(0.5, 0.5, 0.5, 0.5))
       # legend
       plot(0, 0, type = "n", xlim = c(0, 1), ylim = c(1, 101), axes = FALSE, ann = FALSE)
@@ -206,13 +223,14 @@ server <- function(input, output) {
       text(xdata$zen, xdata$parasiteload, labels = xdata$id)
       # draw model
       points(newdata$zen, newdata$predicted, type = "l", lwd = 2, col = "red")
-      # add model results
+      # add model results to figure
       Fs <- summary(mod)$fstatistic
-
-      text(-3, 6.9, labels = bquote(parasite~load == .(round(coef(mod)[1], 2)) +  .(round(coef(mod)[2], 2))~centrality), adj=0, cex = 0.6)
-      text(-3, 6.7, labels = bquote(italic(F)[list(.(Fs[2]), .(Fs[3]))] == .(round(Fs[1], 2))), adj=0, cex = 0.6)
-      text(-3, 6.5, labels = bquote(italic(p) == .(sprintf("%.4f", coefficients(summary(mod))[2, 4]))), adj=0, cex = 0.6)
-
+      text(x = -3, y = 6.9, adj = 0, cex = 0.6,
+           labels = bquote(parasite~load == .(round(coef(mod)[1], 2)) + .(round(coef(mod)[2], 2))~centrality))
+      text(x = -3, y = 6.7, adj = 0, cex = 0.6,
+           labels = bquote(italic(F)[list(.(Fs[2]), .(Fs[3]))] == .(round(Fs[1], 2))))
+      text(x = -3, y = 6.5, adj = 0, cex = 0.6,
+           labels = bquote(italic(p) == .(sprintf("%.4f", coefficients(summary(mod))[2, 4]))))
     }
   })
 }

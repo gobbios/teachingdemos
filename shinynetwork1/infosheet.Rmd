@@ -5,7 +5,9 @@ Some notes on this app. The major purpose of it is to demonstrate some of the po
 
 One annoying thing that I couldn't fix yet is the colour of the labels in the network figure, which I set to show up in white, but which doesn't work, at least on the computer I'm writing this.
 
-One other thing that would need some work is to 'fix' the layout of the network figure. So far this works only in a very limited way. For example, if the clustering is drawn or if the centrality measure selected changes, the layout of the network figure is maintained. But as soon as the composition of individuals changes, the layout is recalculated. 
+The layout of nodes is fixed now, i.e. it won't change if individuals are added/removed or if different clustering or centrality measures are selected. What might happen is that if you remove a node that was on the edge of the plot, the updated plot will just fill the plotting area again, it will 'stretch'. For example, in the initial plot, if you remove individual 'i', the plot stretches a little bit vertically, but the actual relative layout of nodes with respect to each other will remain the same. 
+
+More generally, if you don't like the current layout, you can 'refresh' with a click on the corresponding button, which recalculates a new network layout.
 
 Finally, the regression example is based on a simulated effect of eigenvector centrality on parasite load. This is entirely arbitrary and is only supposed to illustrate the effect of knocking out individuals from the network. Also note that for the purpose of modelling, the centrality indices were *z*-transformed.
 
