@@ -3,8 +3,6 @@
 
 Some notes on this app. The major purpose of it is to demonstrate some of the possibilities that `shiny` presents in the context of visualizing social networks. The data were generated such that there are three clusters of individuals with only two individuals that were part of all three clusters. And the data were also generated in a directed way. This is important because this version of the app ignores this latter aspect for the centrality measures for which directionality is relevant. A 'proper' version of this app would allow specifying directionality, e.g. in- versus out-degree.
 
-One annoying thing that I couldn't fix yet is the colour of the labels in the network figure, which I set to show up in white, but which doesn't work, at least on the computer I'm writing this.
-
 The layout of nodes is fixed now, i.e. it won't change if individuals are added/removed or if different clustering or centrality measures are selected. What might happen is that if you remove a node that was on the edge of the plot, the updated plot will just fill the plotting area again, it will 'stretch'. For example, in the initial plot, if you remove individual 'i', the plot stretches a little bit vertically, but the actual relative layout of nodes with respect to each other will remain the same. 
 
 More generally, if you don't like the current layout, you can 'refresh' with a click on the corresponding button, which recalculates a new network layout.

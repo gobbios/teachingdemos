@@ -150,7 +150,7 @@ server <- function(input, output) {
     if(input$centrmeas == 1) { # no legend...
       par(mar = c(0, 0, 0, 0))
       plot(G, vertex.color = V(G)$xcol, mark.groups = grplabels,
-           edge.width = E(G)$weight * input$weightwidth, label.color = "white",
+           edge.width = E(G)$weight * input$weightwidth, vertex.label.color = "white",
            layout = lout$lout[input$testids, ]) #
     }
     if(input$centrmeas > 1) {
@@ -158,7 +158,7 @@ server <- function(input, output) {
       layout(matrix(1:2, nrow = 1), widths = c(5, 2))
       par(mar = c(0, 0, 0, 0))
       plot(G, vertex.color = V(G)$xcol, mark.groups = grplabels,
-           edge.width = E(G)$weight * input$weightwidth, label.color = "white",
+           edge.width = E(G)$weight * input$weightwidth, vertex.label.color = "white",
            layout = lout$lout[input$testids, ])
       par(mar = c(0.5, 0.5, 0.5, 0.5))
       # legend
