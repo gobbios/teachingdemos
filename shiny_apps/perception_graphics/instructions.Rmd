@@ -1,0 +1,20 @@
+
+
+&nbsp;
+
+This little survey tests the perception of visual information based on different types of graphical elements. You will see different types of plots with two focus elements, named *A* and *B*. These could be 
+
+  - lines of different angles
+  
+  - bars of different height 
+  
+  - shapes of different sizes
+  
+  - circles of different colours
+
+The first question to answer is which of the two is smaller. The second question asks you to estimate what percentage the smaller element is compared to the larger.
+
+Note that the type of scale provided differs between the different types. For the bars, you'll see an ordinary y-axis with limits of 0 and 100. For the shape- and colour-trials, you'll see a scale provided at the top of the chart. 
+
+
+

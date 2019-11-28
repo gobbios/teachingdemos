@@ -1,0 +1,10 @@
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+Rplots.pdf
+testlab
+testlab2
+.httr-oauth
+_passwords.txt
+*.DS_Store
