@@ -1,7 +1,7 @@
 # requires igraph in addition to shiny
 library(shiny)
 library(igraph)
-library(fontawesome)
+# library(fontawesome)
 
 # the data matrix
 mat <- structure(c(0, 0.007, 0.266, 0.129, 2.196, 0.634, 0.011, 0, 0,

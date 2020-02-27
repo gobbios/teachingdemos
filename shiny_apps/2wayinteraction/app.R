@@ -121,6 +121,7 @@ server <- function(input, output) {
 
      if(input$plotranef) {
        re <- ranef(res)$subject
+       xcols <- createdata()$xdata$colors
        for(i in names(xcols)) {
          points(newdata[, input$showwhich], newdata$fit + re[i, 1], type = "l", col = xcols[i])
        }

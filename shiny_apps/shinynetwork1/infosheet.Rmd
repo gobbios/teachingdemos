@@ -7,7 +7,7 @@ The layout of nodes is fixed now, i.e. it won't change if individuals are added/
 
 More generally, if you don't like the current layout, you can 'refresh' with a click on the corresponding button, which recalculates a new network layout.
 
-Finally, the regression example is based on a simulated effect of eigenvector centrality on parasite load. This is entirely arbitrary and is only supposed to illustrate the effect of knocking out individuals from the network. Also note that for the purpose of modelling, the centrality indices were *z*-transformed.
+Finally, the regression example is based on a simulated effect of eigenvector centrality on parasite load. This is entirely arbitrary and is only supposed to illustrate the effect of knocking out individuals from the network. Also note that for the purpose of modelling, the centrality indices were *z*-transformed and no randomization is done to provide appropriate *p*-values.
 
 Oh, and all the network metrics and plots were done using the `igraph` package.
 

@@ -1,0 +1,29 @@
+
+This main purpose of this app is to illustrate how the flipping/swapping algorithm works to create null distributions in the context of association indices. The general idea is to generate a data set (one that you may consider the *observed* data), run a number of randomizations on this data set and inspect the resulting null distributions of some test statistics. In order to keep things as simple as possible there are only a few parameters that can be changed.
+
+The main app can be reached in the `flipping/swapping` tab at the top of the app/page. A secondary app, which illustrates randomizations being re-initialized multiple times can be found in the `multiple chains` tab. A third app `dominance and centrality` illustrates the usage of a regression coefficient as test statistic for a randomization test. Only the first app is documented below.
+
+### Quick guide to `flipping/swapping`
+
+Click `generate data set`. This will show you a generated data set and the network derived from it, using the app's default settings. Next, click `run randomizations`, this will take a few moments. The display now changes. You'll see the data set after one flip (highlighted in red in the data table, and the flip is illustrated in the two boxes next to the table). You will also see 3 rows of histograms on the right. The top row displays strength values of two individuals (*A* and *C*). The center row shows the association indeces for two dyads (*A-B* and *C-D*). The bottom row displays *S*, a global association index for the entire data set (following Bejder et al 1998). In each display, the histogram depicts the distribution assuming random associations. The vertical red lines indicate the observed values from the original data, and the *p*-value is displayed in the top right corner of each histogram.
+
+The initial display will show the results after one flip, so that's not too meaningful. Increase the slider value `visualization step`. This allows you to track how the data, the null distributions, and the p-values change as you perform more and more flips.
+
+### Data settings
+
+With `individuals` and `observations` you can control group/population size and the number of independent observations. The `proportion of '1's` determines the overall prevalance of individuals being counted as present during a given observation: the higher the number here, the more individuals you will have present per observation. Note that the algorithm to create observations can get stuck if you select many individuals and/or observations while keeping the proportion of 1s low. If you click the `generate data set` and nothing happens after a few seconds you need to restart the app (sorry, there is no reset button).
+
+Next, you can choose whether two dyads show a specific pattern. `A and B are strong associates` indicates that the data are generated such that whenever `A` is present, `B` is likely to be present too and if `A` is absent, `B` is also likely absent. You can also select `C and D as avoiding each other`, which means that in the data `C` and `D` are almost never observed together. The rest of the associations is random (including `A-B` and `C-D` if they are not selected). Once you are happy with these settings, click `generate data set` and you will see the raw association table and a derived network based on the *Simple Ratio Index*. If you select a lot of observations, the text might become cluttered, which is unavoidable because I wanted to have the entire data set visible at all times (but you can try to adjust the `text size` at the bottom of the page).
+
+### Analysis options
+
+Next, you can randomize the data. For this you need to set the number of randomzitations and whether flips occur only on checkerboard matrices. If you deselect this latter option, random 2x2 matrices are selected and only if a checkerboard is found, an actual flip occurs. Now you are ready to run the randomizations. Depending on the size of the data set this can take a while. With the default settings (6 individuals, 20 observations, 1000 randomizations) it should take no more than a few seconds.
+
+### Display options
+
+Once this is done, the display will change and you will be able to see randomization results after the first randomization. You can control which step in the randomization you want to view via the `visualization step` slider at the bottom. The default value is 1, which will result in histograms on the right that just show the observed value from the starting data set (per convention, the observed data set counts as the 'first randomization'). If you increase the slider value, more and more randomizations are added and you can follow which matrices are swapped (or attempted to be swapped) between the data set and the histograms. You might also notice that the numbers in the data set will appear initially as grey and gradually change to black. This just indicates which values in the data set were swapped at least once.
+
+In the `visualization step` slider there is also a tiny play button, which starts animating the randomization step by step. Depending on the size of the data set and the speed of your computer, this animation will run smoothly or might lead to greyed out screens.
+
+
+
