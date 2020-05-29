@@ -1,10 +1,10 @@
 This repository contains code examples and shiny apps I wrote for teaching purposes.
 
-In order to start any of the apps remotely, you need the `shiny` and the `devtools` packages.
+In order to start any of the apps remotely, you need the `shiny` package.
 
 ## network null models
 
-This app illustrates the use of randomizations in the context of hypothesis testing in the context of social networks. It requires the `igraph` package installed.
+This app illustrates the use of randomizations for hypothesis testing in the context of social networks. It requires the `igraph` package installed.
 
 `shiny::runGitHub("teachingdemos", "gobbios", subdir = "shiny_apps/network_null_models")`
 

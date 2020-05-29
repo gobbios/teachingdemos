@@ -1,8 +1,5 @@
 
-# type = "bar"
-# A = 80
-# B = 24
-create_graph <- function(type, A, B) {
+create_graph <- function(type, A, B, offs_A = NULL, offs_B = NULL) {
   par(family = "serif")
   create_circle <- function(A, B, Acol, Bcol) {
     rvals <- seq(0, 2 * pi, length.out = 101)
@@ -17,27 +14,38 @@ create_graph <- function(type, A, B) {
   color_legend <- function(allcols) {
     res <- seq(0, 100, length.out = 101)
     for (i in 1:100) {
-      rect(xleft = res[i + 1], ybottom = 85, xright = res[i + 2], ytop = 95, border = NA, col = allcols[i])
+      rect(xleft = res[i + 1], ybottom = 85, xright = res[i + 2], ytop = 95, border = NA, col = allcols[i], xpd = TRUE)
     }
+    rect(xleft = 1, ybottom = 85, xright = 100, ytop = 95, border = "grey", xpd = TRUE)
     text(x = -5, y = 90, labels = "0", xpd = TRUE)
     text(x = 105, y = 90, labels = "100", xpd = TRUE)
   }
 
 
-  plot(0, 0, type = "n", xlim = c(0, 100), ylim = c(0, 100), yaxs = "i", xaxs = "i", axes = FALSE, ann = FALSE, asp = 1)
+  plot(0, 0, type = "n", xlim = c(-1, 101), ylim = c(0, 100), yaxs = "i", xaxs = "i", axes = FALSE, ann = FALSE, asp = 1)
   box()
 
+  if (type == "length") {
+    ytop <- offs_A
+    ybot <- ytop - A
+    segments(x0 = 20, y0 = ybot, x1 = 20, y1 = ytop, lwd = 2)
+
+    ytop <- offs_B
+    ybot <- ytop - B
+    segments(x0 = 80, y0 = ybot, x1 = 80, y1 = ytop, lwd = 2)
+    axis(2, at = c(0, 50, 100), las = 1)
+
+  }
 
   if (type == "angle") {
     rvals <- seq(0, 0.5 * pi, length.out = 100)
     xp <- cos(rvals)
     yp <- sin(rvals)
-    # A=50
-    # B = 100
     points(c(0 + 20, xp[round(A)] * 30 + 20), c(0 + 30, yp[round(A)] * 30 + 30), type = "l", lwd = 2)
+    points(c(0 + 20, xp[1] * 30 + 20), c(0 + 30, yp[1] * 30 + 30), type = "l", lwd = 2)
+
     points(c(0 + 80, xp[round(B)] * 30 + 80), c(0 + 30, yp[round(B)] * 30 + 30), type = "l", lwd = 2)
-    # points(xp * 30 + 20, yp * 30 +40, cex=0.1)
-    # points(xp * 30 + 80, yp * 30 +40, cex=0.1)
+    points(c(0 + 80, xp[1] * 30 + 80), c(0 + 30, yp[1] * 30 + 30), type = "l", lwd = 2)
 
     # legend
     points(c(0 + 45, xp[1]   * 10 + 45), c(0 + 80,   yp[1] * 10 + 80), type = "l")
@@ -46,9 +54,6 @@ create_graph <- function(type, A, B) {
     text(57, 80, "0", cex = 0.7)
     text(45, 92, "100", cex = 0.7)
     text(54, 87, "50", cex = 0.7)
-
-    # points(xp * 10 + 45, yp * 10 +80, cex=0.1)
-    # abline(h = 80)
   }
 
 
@@ -77,7 +82,7 @@ create_graph <- function(type, A, B) {
 
   if (type == "viridis") {
     # create colour scale
-    allcols <- hcl.colors(n = 101, palette = "viridis")
+    allcols <- hcl.colors(n = 100, palette = "viridis")
     # draw circles
     create_circle(A, B, Acol = allcols[round(A)], Bcol = allcols[round(B)])
     # legend
@@ -86,7 +91,7 @@ create_graph <- function(type, A, B) {
 
   if (type == "rainbow") {
     # create colour scale
-    allcols <- rainbow(101)
+    allcols <- rainbow(100)
     # draw circles
     create_circle(A, B, Acol = allcols[round(A)], Bcol = allcols[round(B)])
     # legend
@@ -95,23 +100,29 @@ create_graph <- function(type, A, B) {
 
   if (type == "grey") {
     # create colour scale
-    allcols <- gray.colors(n = 101, start = 1, end = 0)
+    allcols <- gray.colors(n = 100, start = 1, end = 0)
     # draw circles
     create_circle(A, B, Acol = allcols[round(A)], Bcol = allcols[round(B)])
     # legend
     color_legend(allcols = allcols)
   }
 
+  if (type == "point") {
+    axis(2, at = c(0, 50, 100), las = 1)
+    points(20, A, pch = 16, cex = 1.5)
+    points(80, B, pch = 16, cex = 1.5)
+  }
+
   if (type == "bar") {
-    axis(2, at = c(0, 100), las = 1)
+    axis(2, at = c(0, 50, 100), las = 1)
     rect(15, 0, 25, A, border = NA, col = "grey")
     rect(75, 0, 85, B, border = NA, col = "grey")
+    # axis(1, at = c(20, 80), lwd = 0, labels = c("A", "B"), line = -1)
   }
 
   if (type == "square") {
     Ax <- sqrt(A)
     Bx <- sqrt(B)
-
     rect(xleft = 20 - Ax/2,
          ybottom = 50 - Ax/2,
          xright = 20 + Ax/2,
@@ -122,6 +133,13 @@ create_graph <- function(type, A, B) {
          xright = 80 + Bx/2,
          ytop = 50 + Bx/2,
          border = NA, col = "grey")
+    # legend
+    xleg <- seq(20, 80, length.out = 5)
+    sizes <- seq(20, 100, by = 20)
+    for (i in 1:5) {
+      rect(xleft = xleg[i] - sqrt(sizes[i])/2, ybottom = 85 - sqrt(sizes[i])/2, xright = xleg[i] + sqrt(sizes[i])/2, ytop = 85 + sqrt(sizes[i])/2, border = NA, col = "grey")
+      text(xleg[i], 95, labels = sizes[i], cex = 0.7)
+    }
   }
   axis(1, at = c(20, 80), lwd = 0, labels = c("A", "B"), line = -1)
 

@@ -5,11 +5,13 @@ library(mongolite)
 source("create_graph.R")
 
 # prepare test data for local user
-typeorder <- c("square", "bar", "circlesize", "grey", "viridis", "rainbow", "angle")
-nreps <- 1
+typeorder <- c("square", "bar", "circlesize", "grey", "viridis", "rainbow", "angle", "length", "point")
+nreps <- 3
 xdata <- data.frame(type = sample(rep(typeorder, nreps)))
-xdata$Aval <- runif(nrow(xdata), 10, 100)
-xdata$Bval <- runif(nrow(xdata), 10, 100)
+xdata$Aval <- round(runif(nrow(xdata), 5, 98), 1)
+xdata$Bval <- round(runif(nrow(xdata), 5, 98), 1)
+xdata$Aoffs <- 100 - runif(nrow(xdata), 0, 100 - xdata$Aval)
+xdata$Boffs <- 100 - runif(nrow(xdata), 0, 100 - xdata$Bval)
 xdata$truediff <- abs(xdata$Aval - xdata$Bval)
 xdata$user_smaller <- ""
 xdata$user_diff <- NA
@@ -44,8 +46,9 @@ ui <- fluidPage(
     conditionalPanel(condition = "output.state == 'percentdifference'",
         fluidRow(column(width = 6, offset = 3, uiOutput("percentdifference"))),
         fluidRow(column(width = 2, offset = 5, actionButton(inputId = "proceedbutton_2", label = "Continue", icon = NULL)))
-        ),
-    tableOutput("xdata")
+        )
+    # ,
+    # tableOutput("xdata")
 )
 
 
@@ -73,7 +76,7 @@ server <- function(input, output, session) {
         output$xplot <- renderPlot({
             par(mar = c(4, 6, 2, 6))
             xline <- v$counter
-            create_graph(type = v$xdata$type[xline], A = v$xdata$Aval[xline], B = v$xdata$Bval[xline])
+            create_graph(type = v$xdata$type[xline], A = v$xdata$Aval[xline], B = v$xdata$Bval[xline], offs_A = v$xdata$Aoffs[xline], offs_B = v$xdata$Boffs[xline])
         })
 
     })
@@ -82,15 +85,15 @@ server <- function(input, output, session) {
         input$proceedbutton_1
     }, {
         output$percentdifference <- renderUI({
-            tagList(textInput(inputId = "percentdifference", label = paste("what percentage is the smaller of the larger?")))
+            tagList(textInput(inputId = "percentdifference", label = paste("what's the difference in percent between the two?")))
         })
 
         output$xplot <- renderPlot({
             if (!v$finished) {
                 par(mar = c(4, 6, 2, 6))
                 xline <- v$counter
-                create_graph(type = v$xdata$type[xline], A = v$xdata$Aval[xline], B = v$xdata$Bval[xline])
-                title(main = v$counter)
+                create_graph(type = v$xdata$type[xline], A = v$xdata$Aval[xline], B = v$xdata$Bval[xline], offs_A = v$xdata$Aoffs[xline], offs_B = v$xdata$Boffs[xline])
+
             }
         })
         v$state <- "percentdifference"
@@ -103,8 +106,8 @@ server <- function(input, output, session) {
             if (!v$finished) {
                 par(mar = c(4, 6, 2, 6))
                 xline <- v$counter
-                create_graph(type = v$xdata$type[xline], A = v$xdata$Aval[xline], B = v$xdata$Bval[xline])
-                title(main = v$counter)
+                create_graph(type = v$xdata$type[xline], A = v$xdata$Aval[xline], B = v$xdata$Bval[xline], offs_A = v$xdata$Aoffs[xline], offs_B = v$xdata$Boffs[xline])
+                title(main = paste(nreps * 8 - v$counter + 1, "trials to go"))
             }
         })
 
@@ -115,7 +118,7 @@ server <- function(input, output, session) {
         v$timer <- Sys.time()
 
         v$counter <- v$counter + 1
-        if (v$counter == length(typeorder) + 1) {
+        if (v$counter == length(typeorder) * nreps + 1) {
             v$state <- "finished"
             v$finished <- TRUE
         }
@@ -127,10 +130,11 @@ server <- function(input, output, session) {
     })
 
     observeEvent( {input$passwordenter}, {
-        m <- tryCatch(mongo(collection = "perceptionexperiment",
-                            url = sprintf("mongodb://%s:%s@%s/%s", "gobbios", input$password, "ds155714.mlab.com:55714", "graphicsperception")),
-                      error = function(e) FALSE)
-        if (class(m)[1] == "mongo") {
+        u <- paste0("mongodb://", "imaparticipant:", input$password, "@ds261088.mlab.com:61088/", "teachingappsdata", "?retryWrites=false")
+        m <- tryCatch(mongo(collection = "perceptionetal", url = u), error = function(e) FALSE)
+
+
+        if (inherits(m, "mongo")) {
             res <- as.data.frame(v$xdata)
             res$user <- paste(sample(c(LETTERS, letters), 8, replace = TRUE), collapse = "")
             res$today <- as.character(Sys.time())
@@ -157,13 +161,13 @@ server <- function(input, output, session) {
         # percentage the smaller was of the larger.
         pdata$error <- log(abs(pdata$user_diff - pdata$truediff) + 1/8, base = 2)
 
-        output$xplot <- renderPlot({
-            par(mar = c(4, 6, 2, 6), family = "serif")
-            plot(as.numeric(pdata$type), pdata$error, xlim = c(0.5, 7.5), xlab = "category", ylab = "error", axes = FALSE)
-            axis(1, at = 1:7, levels(pdata$type), tcl = 0)
-            axis(2, las = 1)
-            box()
-        })
+        # output$xplot <- renderPlot({
+        #     par(mar = c(4, 6, 2, 6), family = "serif")
+        #     plot(as.numeric(pdata$type), pdata$error, xlim = c(0.5, 7.5), xlab = "category", ylab = "error", axes = FALSE)
+        #     axis(1, at = 1:7, levels(pdata$type), tcl = 0)
+        #     axis(2, las = 1)
+        #     box()
+        # })
         output$xdata <- renderTable(pdata)
 
     })

@@ -6,15 +6,19 @@ This little survey tests the perception of visual information based on different
 
   - lines of different angles
   
+  - lines of different lengths
+  
   - bars of different height 
   
   - shapes of different sizes
   
   - circles of different colours
 
-The first question to answer is which of the two is smaller. The second question asks you to estimate what percentage the smaller element is compared to the larger.
+The first question to answer is which of the two elements represents the smaller value. Select your answer and press `Continue`. 
 
-Note that the type of scale provided differs between the different types. For the bars, you'll see an ordinary y-axis with limits of 0 and 100. For the shape- and colour-trials, you'll see a scale provided at the top of the chart. 
+The second question asks you to estimate the difference between the two elements. For example, if you estimate element `A` to represent 95 and element `B` to be 80, then the difference is 15. Please use a positive number here, i.e. the difference would be 15 for A=95 and B=80 and also 15 for A=80 and B=95.
+
+Note that the type of scale provided differs between the different types of graphs. For the bars, you'll see an ordinary y-axis with limits of 0 and 100. For the shape- and colour-trials, you'll see a scale provided at the top of the chart. For angles, you'll see a small legend.
 
 
 
