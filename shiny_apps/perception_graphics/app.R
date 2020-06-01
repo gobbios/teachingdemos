@@ -104,7 +104,7 @@ server <- function(input, output, session) {
                 par(mar = c(4, 6, 2, 6))
                 xline <- v$counter
                 create_graph(type = v$xdata$type[xline], A = v$xdata$Aval[xline], B = v$xdata$Bval[xline], offs_A = v$xdata$Aoffs[xline], offs_B = v$xdata$Boffs[xline])
-                title(main = paste(nreps * 8 - v$counter + 1, "trials to go"))
+                title(main = paste(nreps * length(typeorder) - v$counter + 1, "trials to go"))
             }
         })
 
