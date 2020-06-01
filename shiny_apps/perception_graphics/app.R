@@ -134,7 +134,7 @@ server <- function(input, output, session) {
             res$user <- paste(sample(c(LETTERS, letters), 8, replace = TRUE), collapse = "")
             res$today <- as.character(Sys.time())
             m$insert(res)
-            showModal(modalDialog(title = "Success", "Thank you.", footer = actionButton("showreport", "Show report."), easyClose = TRUE))
+            showModal(modalDialog(title = "Success", "Thank you.", footer = actionButton("showreport", "Done."), easyClose = TRUE))
         } else {
             showModal(modalDialog(title = "Error", "Hmmm. Something went wrong. Did you enter the correct password?"))
         }
