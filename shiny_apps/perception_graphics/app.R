@@ -21,12 +21,9 @@ xdata$user_time <- NA
 # generate user interface
 ui <- fluidPage(
     titlePanel("perception of graphical elements"),
-    conditionalPanel(condition = "output.state == 'none'",
-                     includeMarkdown("instructions.Rmd")),
-    conditionalPanel(condition = "output.state != 'none' && output.state != 'finished'",
-                     plotOutput('xplot')),
-    conditionalPanel(condition = "output.state == 'finished'",
-                     includeMarkdown("finished.Rmd")),
+    conditionalPanel(condition = "output.state == 'none'", includeMarkdown("instructions.Rmd")),
+    conditionalPanel(condition = "output.state != 'none' && output.state != 'finished'", plotOutput('xplot')),
+    conditionalPanel(condition = "output.state == 'finished'", includeMarkdown("finished.Rmd")),
     textOutput("textout"),
     textOutput("textout2"),
     textOutput("textout3"),
@@ -132,8 +129,6 @@ server <- function(input, output, session) {
     observeEvent( {input$passwordenter}, {
         u <- paste0("mongodb://", "imaparticipant:", input$password, "@ds261088.mlab.com:61088/", "teachingappsdata", "?retryWrites=false")
         m <- tryCatch(mongo(collection = "perceptionetal", url = u), error = function(e) FALSE)
-
-
         if (inherits(m, "mongo")) {
             res <- as.data.frame(v$xdata)
             res$user <- paste(sample(c(LETTERS, letters), 8, replace = TRUE), collapse = "")
@@ -144,7 +139,6 @@ server <- function(input, output, session) {
             showModal(modalDialog(title = "Error", "Hmmm. Something went wrong. Did you enter the correct password?"))
         }
     })
-
 
     observeEvent({ input$showreport }, {
         v$state <- "showreport"

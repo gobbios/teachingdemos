@@ -28,22 +28,26 @@ server <- function(input, output) {
 
   # create figures
   output$figure1 <- renderPlot({
-    plot(anscombe$x1, anscombe$y1, ann = FALSE, axes = FALSE); box()
+    plot(anscombe$x1, anscombe$y1, ann = FALSE, axes = FALSE, xlim = c(2, 17), ylim = c(3, 13), pch = 16, cex = 1.3)
+    box()
     points(vals$coords[1, c(2, 3)], vals$coords[1, c(4, 5)], "l", lwd = 2, col = "red")
   })
 
   output$figure2 <- renderPlot({
-    plot(anscombe$x2, anscombe$y2, ann = FALSE, axes = FALSE); box()
+    plot(anscombe$x2, anscombe$y2, ann = FALSE, axes = FALSE, xlim = c(2, 17), ylim = c(1, 11), pch = 16, cex = 1.3)
+    box()
     points(vals$coords[2, c(2, 3)], vals$coords[2, c(4, 5)], "l", lwd = 2, col = "red")
   })
 
   output$figure3 <- renderPlot({
-    plot(anscombe$x3, anscombe$y3, ann = FALSE, axes = FALSE); box()
+    plot(anscombe$x3, anscombe$y3, ann = FALSE, axes = FALSE, xlim = c(2, 17), ylim = c(4, 14), pch = 16, cex = 1.3)
+    box()
     points(vals$coords[3, c(2, 3)], vals$coords[3, c(4, 5)], "l", lwd = 2, col = "red")
   })
 
   output$figure4 <- renderPlot({
-    plot(anscombe$x4, anscombe$y4, ann = FALSE, axes = FALSE); box()
+    plot(anscombe$x4, anscombe$y4, ann = FALSE, axes = FALSE, xlim = c(6, 21), ylim = c(4, 14), pch = 16, cex = 1.3)
+    box()
     points(vals$coords[4, c(2, 3)], vals$coords[4, c(4, 5)], "l", lwd = 2, col = "red")
   })
 
@@ -76,25 +80,17 @@ server <- function(input, output) {
   })
 
   observeEvent(input$submitresults, {
-    # u <- paste0("mongodb://", "participant:", input$thepassword, "@ds147534.mlab.com:47534/", "teachingdemo", "?retryWrites=false")
-    # m <- tryCatch(mongo(collection = "plottingcoordinates", url = u), error = function(e) FALSE)
-
     u <- paste0("mongodb://", "imaparticipant:", input$thepassword, "@ds261088.mlab.com:61088/", "teachingappsdata", "?retryWrites=false")
     m <- tryCatch(mongo(collection = "draw_the_line", url = u), error = function(e) FALSE)
-
-
-  if (inherits(m, "mongo")) {
-    res <- as.data.frame(vals$coords)
-    res$user <- userid
-    res$today <- today
-    m$insert(res)
-
-    showModal(modalDialog(title = "Success", "Thank you."))
-    # Sys.sleep(5)
-    # stopApp()
-  } else {
-    showModal(modalDialog(title = "Error", "Hmmm. Something went wrong. Did you enter the correct password?"))
-  }
+    if (inherits(m, "mongo")) {
+      res <- as.data.frame(vals$coords)
+      res$user <- userid
+      res$today <- today
+      m$insert(res)
+      showModal(modalDialog(title = "Success", "Thank you."))
+    } else {
+      showModal(modalDialog(title = "Error", "Hmmm. Something went wrong. Did you enter the correct password?"))
+    }
 
   })
 
