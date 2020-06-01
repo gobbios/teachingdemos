@@ -13,12 +13,14 @@ This little survey tests the perception of visual information based on different
   - shapes of different sizes
   
   - circles of different colours
+  
+  - circles placed along a vertical axis
 
 The first question to answer is which of the two elements represents the smaller value. Select your answer and press `Continue`. 
 
-The second question asks you to estimate the difference between the two elements. For example, if you estimate element `A` to represent 95 and element `B` to be 80, then the difference is 15. Please use a positive number here, i.e. the difference would be 15 for A=95 and B=80 and also 15 for A=80 and B=95.
+The second question asks you to estimate the difference between the two elements. For example, if you estimate element `A` to represent 95 and element `B` to be 81, then the difference is 14. Please use a positive number here, i.e. the difference would be 14 for A=95 and B=81 and also 14 for A=81 and B=95.
 
-Note that the type of scale provided differs between the different types of graphs. For the bars, you'll see an ordinary y-axis with limits of 0 and 100. For the shape- and colour-trials, you'll see a scale provided at the top of the chart. For angles, you'll see a small legend.
+Note that the type of scale provided differs between the different types of graphs. For the bars and circles, you'll see an ordinary y-axis with limits of 0 and 100. For the shape- and colour-trials, you'll see a scale provided at the top of the chart. For angles, you'll see a small legend.
 
 
 
